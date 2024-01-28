@@ -1,13 +1,21 @@
 package com.dost.bookmanagementapi.service;
 
+import com.dost.bookmanagementapi.dto.BookRequestDTO;
+import com.dost.bookmanagementapi.dto.BookResponseDTO;
 import com.dost.bookmanagementapi.model.Book;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Service
 public interface BookService {
     Book getBookById(int id);
 
-    Book addBook(Book book);
+    List<BookResponseDTO> getAllBooks();
 
-    Book updateBook(int id, Book book);
+    BookResponseDTO saveBook(BookRequestDTO book);
 
-    void deleteBook(int id);
+    BookResponseDTO updateBook(int id, BookRequestDTO book);
+
+    BookResponseDTO deleteBook(int id);
 }

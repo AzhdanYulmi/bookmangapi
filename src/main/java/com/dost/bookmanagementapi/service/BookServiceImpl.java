@@ -1,20 +1,25 @@
 package com.dost.bookmanagementapi.service;
 
+import com.dost.bookmanagementapi.dto.BookRequestDTO;
+import com.dost.bookmanagementapi.dto.BookResponseDTO;
 import com.dost.bookmanagementapi.exception.BookNotFoundException;
+import com.dost.bookmanagementapi.mapper.BookMapper;
 import com.dost.bookmanagementapi.model.Book;
 import com.dost.bookmanagementapi.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
-@Service
 public class BookServiceImpl implements BookService {
+
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     @Autowired
-    public BookServiceImpl(BookRepository bookRepository) {
+    public BookServiceImpl(BookRepository bookRepository, BookMapper bookMapper) {
         this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
     }
 
     @Override
@@ -24,29 +29,38 @@ public class BookServiceImpl implements BookService {
         if (optionalBook.isPresent()) {
             return optionalBook.get();
         } else {
-            throw new BookNotFoundException("Not not found for id: " + id);
+            throw new BookNotFoundException("Not found for id: " + id);
         }
     }
 
     @Override
-    public Book addBook(Book book) {
-        bookRepository.save(book);
-
-        return book;
+    public List<BookResponseDTO> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return bookMapper.mapListOfBooksToResponse(books);
     }
 
     @Override
-    public Book updateBook(int id, Book book) {
+    public BookResponseDTO saveBook(BookRequestDTO bookRequestDTO) {
+        Book savedBook = bookMapper.mapRequestToBook(bookRequestDTO);
+        bookRepository.save(savedBook);
+        return bookMapper.mapBookToResponse(savedBook);
+    }
+
+    @Override
+    public BookResponseDTO updateBook(int id, BookRequestDTO bookRequestDTO) {
         Book bookToBeUpdated = getBookById(id);
+        Book updatedBook = bookMapper.mapRequestToBook(bookRequestDTO);
+        updatedBook.setId(id);
+        bookRepository.save(updatedBook);
 
-        book.setId(id);
-        bookRepository.save(book);
-
-        return bookToBeUpdated;
+        return bookMapper.mapBookToResponse(updatedBook);
     }
 
     @Override
-    public void deleteBook(int id) {
+    public BookResponseDTO deleteBook(int id) {
+        Book bookToBeDeleted = getBookById(id);
         bookRepository.deleteById(id);
+
+        return bookMapper.mapBookToResponse(bookToBeDeleted);
     }
 }

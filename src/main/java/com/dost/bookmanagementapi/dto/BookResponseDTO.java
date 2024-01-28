@@ -2,19 +2,17 @@ package com.dost.bookmanagementapi.dto;
 
 import com.dost.bookmanagementapi.model.Book;
 
-public class BookDTO {
+public class BookResponseDTO {
     private int id;
     private String name;
     private String author;
     private double price;
     private String pictureUrl;
 
-
-    public BookDTO() {
+    public BookResponseDTO() {
     }
 
-
-    public BookDTO(int id, String name, String author, double price, String pictureUrl) {
+    public BookResponseDTO(int id, String name, String author, double price, String pictureUrl) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -22,7 +20,7 @@ public class BookDTO {
         this.pictureUrl = pictureUrl;
     }
 
-
+    // Getters and setters
 
     public int getId() {
         return id;
@@ -64,9 +62,9 @@ public class BookDTO {
         this.pictureUrl = pictureUrl;
     }
 
-
-    public static BookDTO fromEntity(Book book) {
-        return new BookDTO(
+    // Convert from entity
+    public static BookResponseDTO fromEntity(Book book) {
+        return new BookResponseDTO(
                 book.getId(),
                 book.getName(),
                 book.getAuthor(),
@@ -74,15 +72,4 @@ public class BookDTO {
                 book.getPictureUrl()
         );
     }
-
-    public Book toEntity() {
-        return new Book(
-                this.id,
-                this.name,
-                this.author,
-                this.price,
-                this.pictureUrl
-        );
-    }
 }
-

@@ -1,8 +1,11 @@
 package com.dost.bookmanagementapi.controller;
 
+import com.dost.bookmanagementapi.dto.BookRequestDTO;
+import com.dost.bookmanagementapi.dto.BookResponseDTO;
 import com.dost.bookmanagementapi.model.Book;
 import com.dost.bookmanagementapi.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,28 +20,34 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable int id) {
-        Book book = bookService.getBookById(id);
-
-        return ResponseEntity.ok(book);
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable int id) {
+        BookResponseDTO book = BookResponseDTO.fromEntity(bookService.getBookById(id));
+        return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @PostMapping()
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        bookService.addBook(book);
-
-        return ResponseEntity.ok(book);
+    @PostMapping
+    public ResponseEntity<BookResponseDTO> addBook(@RequestBody BookRequestDTO bookRequestDTO) {
+        BookResponseDTO bookResponseDTO = bookService.saveBook(bookRequestDTO);
+        if (bookResponseDTO != null) {
+            return new ResponseEntity<>(bookResponseDTO, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable int id, @RequestBody Book book) {
-        bookService.updateBook(id, book);
-
-        return ResponseEntity.ok(book);
+    public ResponseEntity<BookResponseDTO> updateBook(@PathVariable int id, @RequestBody BookRequestDTO bookRequestDTO) {
+        BookResponseDTO updatedBookResponseDTO = bookService.updateBook(id, bookRequestDTO);
+        if (updatedBookResponseDTO != null) {
+            return new ResponseEntity<>(updatedBookResponseDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable int id) {
+    public ResponseEntity<Void> deleteBook(@PathVariable int id) {
         bookService.deleteBook(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
