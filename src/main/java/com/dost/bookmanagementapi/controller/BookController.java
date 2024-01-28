@@ -23,7 +23,7 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping()
     public ResponseEntity<Book> addBook(@RequestBody Book book) {
         bookService.addBook(book);
 
